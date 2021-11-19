@@ -18,6 +18,11 @@ bash <(wget -qO- https://raw.githubusercontent.com/tempnana/ss/main/ss-kcptun.sh
 <pre>
 bash <(wget -qO- https://raw.githubusercontent.com/tempnana/ss/main/ss.sh)
 </pre>
+<br>
+<p>Other Shadowsocks-libev:</p>
+<pre>
+bash <(wget -qO- https://raw.githubusercontent.com/tempnana/ss/main/s.sh)
+</pre>
 <!--
 <br>
 <p>Manage it:</p>
