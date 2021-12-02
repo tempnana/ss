@@ -47,7 +47,7 @@ ExecStart=/usr/bin/snap run shadowsocks-libev.ss-server -c /var/snap/shadowsocks
 WantedBy=multi-user.target
 EOF
 systemctl enable shadowsocks-libev-server@config
-systemctl start shadowsocks-libev-server@config
+systemctl start shadowsocks-libev-server@config &
 #systemctl status shadowsocks-libev-server@config
 #################################
 ###kcptun
