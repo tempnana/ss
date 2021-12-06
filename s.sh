@@ -3,7 +3,7 @@
 apt update && apt upgrade -y
 apt install snapd -y
 snap install core
-#instll shadowsocks-libev
+#install shadowsocks-libev
 snap install shadowsocks-libev
 #get ip
 get_ip() {
@@ -29,7 +29,7 @@ cat > /var/snap/shadowsocks-libev/common/etc/shadowsocks-libev/config.json <<EOF
     "server_port":$ssport,
     "password":"$sspwd",
     "method":"$method",
-    "mode":"tcp_only",
+    "mode":"tcp_and_udp",
     "fast_open":false
 }
 EOF
@@ -48,6 +48,83 @@ EOF
 systemctl enable shadowsocks-libev-server@config
 systemctl start shadowsocks-libev-server@config &
 #systemctl status shadowsocks-libev-server@config
+#################################
+###kcptun
+#################################
+mkdir -p /usr/local/kcptun
+cd /usr/local/kcptun
+# wget https://github.com/xtaci/kcptun/releases/download/v20210103/kcptun-linux-amd64-20210103.tar.gz
+wget https://github.com/xtaci/kcptun/releases/download/v20210624/kcptun-linux-amd64-20210624.tar.gz
+tar -zxvf kcptun-linux-amd64-20210624.tar.gz
+#set kcptun port/password
+kcport=$(shuf -i 20000-29999 -n 1)
+kcpwd=$(openssl rand -base64 10)
+#make kcptun server config file
+cat > server-config.json <<EOF
+{
+"listen": ":${kcport}",
+"target": "127.0.0.1:${ssport}",
+"key": "${kcpwd}",
+"crypt": "aes-128",
+"mode": "fast2",
+"mtu": 1350,
+"sndwnd": 1024,
+"rcvwnd": 1024,
+"datashard": 70,
+"parityshard": 30,
+"dscp": 46,
+"nocomp": false,
+"acknodelay": false,
+"nodelay": 0,
+"interval": 40,
+"resend": 0,
+"nc": 0,
+"sockbuf": 4194304,
+"keepalive": 10
+}
+EOF
+#make kcptun client config file
+cat > client-config.json <<EOF
+{
+"localaddr": ":${ssport}",
+"remoteaddr": "$(get_ip):${kcport}",
+"key": "${kcpwd}",
+"crypt": "aes-128",
+"mode": "fast2",
+"mtu": 1350,
+"sndwnd": 1024,
+"rcvwnd": 1024,
+"datashard": 70,
+"parityshard": 30,
+"dscp": 46,
+"nocomp": false,
+"acknodelay": false,
+"nodelay": 0,
+"interval": 40,
+"resend": 0,
+"nc": 0,
+"sockbuf": 4194304,
+"keepalive": 10
+}
+EOF
+#run
+chmod +x server_linux_amd64
+./server_linux_amd64 -c /usr/local/kcptun/server-config.json 2>&1 &
+#auto boot
+cat > /etc/rc.local << EOF
+#!/bin/bash -e
+#
+# rc.local
+#
+# By default this script does nothing.
+# kcptun
+( ( /usr/local/kcptun/server_linux_amd64 -c /usr/local/kcptun/server-config.json 2>&1 & )  )
+exit 0
+EOF
+chmod +x /etc/rc.local
+systemctl enable rc-local
+systemctl start rc-local.service
+systemctl status rc-local.service
 #crontab
 rM=$(($RANDOM%59))
 echo "$[rM] 4 * * * /sbin/reboot" >> /var/spool/cron/crontabs/root && /etc/init.d/cron restart
@@ -57,15 +134,24 @@ echo "$[rM] 4 * * * /sbin/reboot" >> /var/spool/cron/crontabs/root && /etc/init.
 apt install ufw -y
 # ufw allow ssh
 ufw allow "$ssport"
+ufw allow "$kcport"
 ufw --force enable
 #ufw rules checking
 ufw status verbose
+# end
+### More settings:
+###
+#ufw disable
+###
+# ufw reset
 #ss url
-baseurl=$(echo -n "$method:$sspwd@$(get_ip):$ssport" | base64 -w0)
+baseurl=$(echo -n "$method:$sspwd@127.0.0.1:$ssport" | base64 -w0)
 echo '##########'
 echo 'ss url is:'
-echo '##########'
 echo 'ss://'$baseurl'#'$(get_ip)
 echo '##########'
+#kcptun client config
+echo 'kcptun client config:'
+cat /usr/local/kcptun/client-config.json
 echo '#######ss status check:####### '
 echo 'systemctl status shadowsocks-libev-server@config'
