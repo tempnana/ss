@@ -2,18 +2,9 @@
 #install snap
 apt update && apt upgrade -y
 apt install snapd -y
-apt-get install --no-install-recommends build-essential autoconf libtool libssl-dev libpcre3-dev libev-dev asciidoc xmlto automake -y
 snap install core
 #install shadowsocks-libev
 snap install shadowsocks-libev
-#install simple-obfs
-git clone https://github.com/shadowsocks/simple-obfs.git
-cd simple-obfs
-git submodule update --init --recursive
-./autogen.sh
-./configure && make
-sudo make install
-#install simple-obfs
 #get ip
 get_ip() {
     local IP
@@ -39,9 +30,7 @@ cat > /var/snap/shadowsocks-libev/common/etc/shadowsocks-libev/config.json <<EOF
     "password":"$sspwd",
     "method":"$method",
     "mode":"tcp_and_udp",
-    "fast_open":false,
-    "plugin":"obfs-server",
-    "plugin_opts":"obfs=http"
+    "fast_open":false
 }
 EOF
 #auto boot
@@ -59,6 +48,55 @@ EOF
 systemctl enable shadowsocks-libev-server@config
 systemctl start shadowsocks-libev-server@config &
 #systemctl status shadowsocks-libev-server@config
+#################################
+###kcptun
+#################################
+mkdir -p /usr/local/kcptun
+cd /usr/local/kcptun
+# wget https://github.com/xtaci/kcptun/releases/download/v20210103/kcptun-linux-amd64-20210103.tar.gz
+wget https://github.com/xtaci/kcptun/releases/download/v20210624/kcptun-linux-amd64-20210624.tar.gz
+tar -zxvf kcptun-linux-amd64-20210624.tar.gz
+#set kcptun port/password
+kcport=$(shuf -i 20000-29999 -n 1)
+kcpwd=$(openssl rand -base64 10)
+#make kcptun server config file
+cat > server-config.json <<EOF
+{
+  "listen": ":${kcport}",
+  "target": "127.0.0.1:${ssport}",
+  "key": "${kcpwd}",
+  "crypt": "aes",
+  "mode": "fast",
+  "mtu": 1350,
+  "sndwnd": 1024,
+  "rcvwnd": 1024,
+  "datashard": 10,
+  "parityshard": 3,
+  "dscp": 0,
+  "nocomp": false,
+  "quiet": false,
+  "tcp": false,
+  "pprof": false
+}
+EOF
+#run
+chmod +x server_linux_amd64
+./server_linux_amd64 -c /usr/local/kcptun/server-config.json 2>&1 &
+#auto boot
+cat > /etc/rc.local << EOF
+#!/bin/bash -e
+#
+# rc.local
+#
+# By default this script does nothing.
+# kcptun
+( ( /usr/local/kcptun/server_linux_amd64 -c /usr/local/kcptun/server-config.json 2>&1 & )  )
+exit 0
+EOF
+chmod +x /etc/rc.local
+systemctl enable rc-local
+systemctl start rc-local.service
+systemctl status rc-local.service
 #crontab
 rM=$(($RANDOM%59))
 echo "$[rM] 4 * * * /sbin/reboot" >> /var/spool/cron/crontabs/root && /etc/init.d/cron restart
@@ -68,6 +106,7 @@ cd && rm -rf /etc/rsyslog.conf && rm -rf /etc/rsyslog.d && rm -rf /etc/init.d/rs
 apt install ufw -y
 # ufw allow ssh
 ufw allow "$ssport"
+ufw allow "$kcport"
 ufw --force enable
 #ufw rules checking
 ufw status verbose
@@ -78,10 +117,13 @@ ufw status verbose
 ###
 # ufw reset
 #ss url
-mbaseurl=$(echo -n "$method:$sspwd@$(get_ip):$ssport" | base64 -w0)
+baseurl=$(echo -n "$method:$sspwd@$(get_ip):$ssport" | base64 -w0)
 echo '##########'
-echo 'mobile ss url is:'
-echo 'ss://'$mbaseurl'#'$(get_ip)
+echo 'ss url is:'
+echo 'ss://'$baseurl'#'$(get_ip)
 echo '##########'
-#echo '#######ss status check:####### '
-#echo 'systemctl status shadowsocks-libev-server@config'
+#kcptun client config
+echo 'kcptun mobile client config:'
+echo "key=${kcpwd};crypt=aes;mode=fast;mtu=1350;sndwnd=1024;rcvwnd=1024;datashard=10;parityshard=3;dscp=0"
+# echo '#######ss status check:####### '
+# echo 'systemctl status shadowsocks-libev-server@config'
