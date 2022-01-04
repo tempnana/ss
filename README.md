@@ -14,6 +14,11 @@ bash <(wget -qO- https://raw.githubusercontent.com/tempnana/ss/main/ss-kcptun-ud
 bash <(wget -qO- https://raw.githubusercontent.com/tempnana/ss/main/ss-kcptun.sh)
 </pre>
 <br>
+<p>Only Install Shadowsocks-obfs:</p>
+<pre>
+bash <(wget -qO- https://raw.githubusercontent.com/tempnana/ss/main/ss-obfs.sh)
+</pre>
+<br>
 <p>Only Install Shadowsocks-libev:</p>
 <pre>
 bash <(wget -qO- https://raw.githubusercontent.com/tempnana/ss/main/ss.sh)
