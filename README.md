@@ -16,7 +16,7 @@ bash <(wget -qO- https://raw.githubusercontent.com/tempnana/ss/main/ss-kcptun.sh
 <br>
 <p>Only Install Shadowsocks-kcptun-mobile:</p>
 <pre>
-bash <(wget -qO- https://raw.githubusercontent.com/tempnana/ss/main/ss-kcptun-mobile.sh)
+bash <(wget -qO- https://raw.githubusercontent.com/tempnana/ss/main/ss-kcptun-m.sh)
 </pre>
 <br>
 <p>Only Install Shadowsocks-libev:</p>
