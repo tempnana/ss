@@ -49,6 +49,16 @@ systemctl start shadowsocks-libev-server@config &
 #systemctl status shadowsocks-libev-server@config
 #################################
 ###kcptun
+#Increase the number of open files on your server,
+echo ulimit -n 65535 >> /etc/profile
+source /etc/profile
+#Suggested sysctl.conf parameters for better handling of UDP packets:
+echo 'net.core.rmem_max=26214400' >> /etc/sysctl.conf
+echo 'net.core.rmem_default=26214400' >> /etc/sysctl.conf
+echo 'net.core.wmem_max=26214400' >> /etc/sysctl.conf
+echo 'net.core.wmem_default=26214400' >> /etc/sysctl.conf
+echo 'net.core.netdev_max_backlog=2048' >> /etc/sysctl.conf
+/sbin/sysctl -p
 #################################
 mkdir -p /usr/local/kcptun
 cd /usr/local/kcptun
@@ -129,7 +139,7 @@ rM=$(($RANDOM%59))
 echo "$[rM] 4 * * * /sbin/reboot" >> /var/spool/cron/crontabs/root && /etc/init.d/cron restart
 #disable log/history/root login
 cd && rm -rf /etc/rsyslog.conf && rm -rf /etc/rsyslog.d && rm -rf /etc/init.d/rsyslog && rm -rf /var/log && history -c && export HISTSIZE=0
-#cd /etc/ssh && sed -i "s/PermitRootLogin yes/PermitRootLogin no/g" sshd_config && systemctl restart sshd.service && cd
+cd /etc/ssh && sed -i "s/PermitRootLogin yes/PermitRootLogin no/g" sshd_config && systemctl restart sshd.service && cd
 #ufw
 apt install ufw -y
 # ufw allow ssh
@@ -161,7 +171,7 @@ echo 'ss://'$mbaseurl'#'$(get_ip)
 echo '##########'
 echo 'kcptun mobile client config:'
 echo '##########'
-echo "key=${kcpwd};crypt=aes-128;mode=fast2;mtu=1350;sndwnd=1024;rcvwnd=1024;datashard=70;parityshard=30;dscp=46;interval=40;sockbuf=4194304;keepalive=10"
+echo "key=${kcpwd};crypt=aes-128;mode=fast2;mtu=1350;sndwnd=1024;rcvwnd=1024;datashard=70;parityshard=30;dscp=46;interval=40;sockbuf=16777217;keepalive=10"
 echo '##########'
 #echo '#######ss status check:####### '
 #echo 'systemctl status shadowsocks-libev-server@config'
