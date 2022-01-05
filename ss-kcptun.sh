@@ -153,13 +153,13 @@ echo '##########'
 #kcptun client config
 echo 'kcptun client config:'
 cat /usr/local/kcptun/client-config.json
-mbaseurl=$(echo -n "$method:$sspwd@$(get_ip):$ssport" | base64 -w0)
+mbaseurl=$(echo -n "$method:$sspwd@$(get_ip):$kcport" | base64 -w0)
 echo '##########'
 echo 'mobile ss url is:'
 echo 'ss://'$mbaseurl'#'$(get_ip)
 echo '##########'
 echo 'kcptun mobile client config:'
-echo "key=${kcpwd};crypt=aes-128;mode=fast2;mtu=1350;sndwnd=1024;rcvwnd=1024;datashard=70;parityshard=30;dscp=46"
+echo "key=${kcpwd};crypt=aes-128;mode=fast2;mtu=1350;sndwnd=1024;rcvwnd=1024;datashard=70;parityshard=30;dscp=46;interval=40;sockbuf=4194304;keepalive=10"
 echo '##########'
 #echo '#######ss status check:####### '
 #echo 'systemctl status shadowsocks-libev-server@config'
