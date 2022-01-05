@@ -64,7 +64,7 @@ cat > server-config.json <<EOF
 "listen": ":${kcport}",
 "target": "127.0.0.1:${ssport}",
 "key": "${kcpwd}",
-"crypt": "aes-128",
+"crypt": "aes",
 "mode": "fast2",
 "mtu": 1350,
 "sndwnd": 1024,
@@ -78,7 +78,7 @@ cat > server-config.json <<EOF
 "interval": 40,
 "resend": 0,
 "nc": 0,
-"sockbuf": 4194304,
+"sockbuf": 16777217,
 "keepalive": 10
 }
 EOF
@@ -88,7 +88,7 @@ cat > client-config.json <<EOF
 "localaddr": ":${ssport}",
 "remoteaddr": "$(get_ip):${kcport}",
 "key": "${kcpwd}",
-"crypt": "aes-128",
+"crypt": "aes",
 "mode": "fast2",
 "mtu": 1350,
 "sndwnd": 1024,
@@ -102,7 +102,7 @@ cat > client-config.json <<EOF
 "interval": 40,
 "resend": 0,
 "nc": 0,
-"sockbuf": 4194304,
+"sockbuf": 16777217,
 "keepalive": 10
 }
 EOF
