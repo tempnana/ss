@@ -88,7 +88,7 @@ cat > server-config.json <<EOF
 "interval": 40,
 "resend": 0,
 "nc": 0,
-"sockbuf": 16777217,
+"sockbuf": 4194304,
 "keepalive": 10
 }
 EOF
@@ -112,7 +112,7 @@ cat > client-config.json <<EOF
 "interval": 40,
 "resend": 0,
 "nc": 0,
-"sockbuf": 16777217,
+"sockbuf": 4194304,
 "keepalive": 10
 }
 EOF
@@ -171,7 +171,7 @@ echo 'ss://'$mbaseurl'#'$(get_ip)
 echo '##########'
 echo 'kcptun mobile client config:'
 echo '##########'
-echo "key=${kcpwd};crypt=aes-128;mode=fast2;mtu=1350;sndwnd=1024;rcvwnd=1024;datashard=70;parityshard=30;dscp=46;interval=40;sockbuf=16777217;keepalive=10"
+echo "key=${kcpwd};crypt=aes-128;mode=fast2;mtu=1350;sndwnd=1024;rcvwnd=1024;datashard=70;parityshard=30;dscp=46;interval=40;sockbuf=4194304;keepalive=10"
 echo '##########'
 #echo '#######ss status check:####### '
 #echo 'systemctl status shadowsocks-libev-server@config'
