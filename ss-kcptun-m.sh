@@ -53,8 +53,8 @@ systemctl start shadowsocks-libev-server@config 2>&1 &
 #################################
 mkdir -p /usr/local/kcptun
 cd /usr/local/kcptun
-# wget https://github.com/xtaci/kcptun/releases/download/v20210103/kcptun-linux-amd64-20210103.tar.gz
-wget https://github.com/xtaci/kcptun/releases/download/v20210922/kcptun-linux-amd64-20210922.tar.gz && tar -zxvf kcptun-linux-amd64-20210922.tar.gz
+wget https://github.com/xtaci/kcptun/releases/download/v20210103/kcptun-linux-amd64-20210103.tar.gz && tar -zxvf kcptun-linux-amd64-20210103.tar.gz
+# wget https://github.com/xtaci/kcptun/releases/download/v20210922/kcptun-linux-amd64-20210922.tar.gz && tar -zxvf kcptun-linux-amd64-20210922.tar.gz
 #set kcptun port/password
 # kcport=$(shuf -i 20000-29999 -n 1)
 kcport="29900"
