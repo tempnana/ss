@@ -17,8 +17,7 @@ ssport=$(shuf -i 9000-19999 -n 1)
 sspwd=$(openssl rand -base64 16)
 arr[0]='chacha20-ietf-poly1305'
 arr[1]='aes-256-gcm'
-arr[2]='aes-192-gcm'
-arr[3]='aes-128-gcm'
+arr[2]='aes-128-gcm'
 rand=$(($RANDOM % ${#arr[@]}))
 method=${arr[$rand]}
 #make ss config file
