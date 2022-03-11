@@ -142,42 +142,32 @@ EOF
 #run
 chmod +x udp2raw_amd64
 ./udp2raw_amd64 --conf-file server.conf 2>&1 &
-#auto boot kcptun
-cat > /etc/init.d/kcp2raw << EOF
-#!/bin/sh
+#auto boot script
+cat > /usr/local/autoboot.sh << EOF
+#!/bin/bash
+cd /usr/local/
+./client -c server-config.json | ./udp2raw_amd64 --conf-file server.conf
+exit 0
+EOF
+chmod +x /usr/local/autoboot.sh
+#auto boot script enable
+cat > /etc/init.d/autoboot << EOF
+#!/bin/bash
 ### BEGIN INIT INFO
-# Provides: kcptun
+# Provides: autoboot
 # Required-Start: $network $remote_fs $local_fs
 # Required-Stop: $network $remote_fs $local_fs
 # Default-Start: 2 3 4 5
 # Default-Stop: 0 1 6
-# Short-Description: kcptun
-# Description: kcptun
+# Short-Description: autoboot
+# Description: autoboot
 ### END INIT INFO
-# kcptun
-( ( /usr/local/kcptun/server_linux_amd64 -c /usr/local/kcptun/server-config.json >/dev/null 2>&1  & ) )
+# autoboot
+bash /usr/local/autoboot.sh
 exit 0
 EOF
-chmod +x /etc/init.d/kcptun
-update-rc.d /etc/init.d/kcptun
-#auto boot udp2raw
-cat > /etc/init.d/udp2raw << EOF
-#!/bin/sh
-### BEGIN INIT INFO
-# Provides: udp2raw
-# Required-Start: $network $remote_fs $local_fs
-# Required-Stop: $network $remote_fs $local_fs
-# Default-Start: 2 3 4 5
-# Default-Stop: 0 1 6
-# Short-Description: udp2raw
-# Description: udp2raw
-### END INIT INFO
-# udp2raw
-( ( /usr/local/udp2raw/udp2raw_amd64 --conf-file /usr/local/udp2raw/server.conf >/dev/null 2>&1  & ) )
-exit 0
-EOF
-chmod +x /etc/init.d/udp2raw
-update-rc.d /etc/init.d/udp2raw
+chmod +x /etc/init.d/autoboot
+update-rc.d /etc/init.d/autoboot
 #crontab
 rM=$(($RANDOM%59))
 echo "$[rM] 4 * * * /sbin/reboot" >> /var/spool/cron/crontabs/root && /etc/init.d/cron restart
