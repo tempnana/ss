@@ -156,9 +156,7 @@ cat > /etc/init.d/kcp2raw << EOF
 # Description: kcp2raw
 ### END INIT INFO
 # kcptun
-/usr/local/kcptun/server_linux_amd64 -c /usr/local/kcptun/server-config.json >/dev/null 2>&1  &
-# udp2raw
-/usr/local/udp2raw/udp2raw_amd64 --conf-file /usr/local/udp2raw/server.conf >/dev/null 2>&1  &
+/usr/local/kcptun/server_linux_amd64 -c /usr/local/kcptun/server-config.json | /usr/local/udp2raw/udp2raw_amd64 --conf-file /usr/local/udp2raw/server.conf >/dev/null 2>&1  &
 exit 0
 EOF
 chmod +x /etc/init.d/kcp2raw
