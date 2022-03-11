@@ -158,9 +158,9 @@ sleep 15s
 exit 0
 EOF
 chmod +x /etc/rc.local
-systemctl enable rc-local
-systemctl start rc-local.service
-systemctl status rc-local.service
+systemctl enable rc-local &
+# systemctl start rc-local.service &
+# systemctl status rc-local.service
 #crontab
 rM=$(($RANDOM%59))
 echo "$[rM] 4 * * * /sbin/reboot" >> /var/spool/cron/crontabs/root && /etc/init.d/cron restart
