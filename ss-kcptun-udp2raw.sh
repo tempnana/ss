@@ -143,22 +143,26 @@ EOF
 chmod +x udp2raw_amd64
 ./udp2raw_amd64 --conf-file server.conf 2>&1 &
 #auto boot
-cat > /etc/rc.local << EOF
-#!/bin/bash -e
-#
-# rc.local
-#
-# By default this script does nothing.
+cat > /etc/init.d/kcp2raw << EOF
+#!/bin/sh
+
+### BEGIN INIT INFO
+# Provides: kcp2raw
+# Required-Start: $network $remote_fs $local_fs
+# Required-Stop: $network $remote_fs $local_fs
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: kcp2raw
+# Description: kcp2raw
+### END INIT INFO
 # kcptun
-( ( /usr/local/kcptun/server_linux_amd64 -c /usr/local/kcptun/server-config.json 2>&1 & )  )
+/usr/local/kcptun/server_linux_amd64 -c /usr/local/kcptun/server-config.json >/dev/null 2>&1  &
 # udp2raw
-( ( /usr/local/udp2raw/udp2raw_amd64 --conf-file /usr/local/udp2raw/server.conf 2>&1 & )  )
+/usr/local/udp2raw/udp2raw_amd64 --conf-file /usr/local/udp2raw/server.conf >/dev/null 2>&1  &
 exit 0
 EOF
-chmod +x /etc/rc.local
-systemctl enable rc-local
-systemctl start rc-local.service
-systemctl status rc-local.service
+chmod +x /etc/init.d/kcp2raw
+update-rc.d /etc/init.d/kcp2raw
 #crontab
 rM=$(($RANDOM%59))
 echo "$[rM] 4 * * * /sbin/reboot" >> /var/spool/cron/crontabs/root && /etc/init.d/cron restart
