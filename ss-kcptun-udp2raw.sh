@@ -149,7 +149,6 @@ cat > /etc/rc.local << EOF
 # rc.local
 #
 # By default this script does nothing.
-sleep 5
 # kcptun
 ( ( /usr/local/kcptun/server_linux_amd64 -c /usr/local/kcptun/server-config.json 2>&1 & )  )
 sleep 15s
@@ -159,7 +158,7 @@ exit 0
 EOF
 chmod +x /etc/rc.local
 systemctl enable rc-local &
-# systemctl start rc-local.service &
+systemctl start rc-local.service &
 # systemctl status rc-local.service
 #crontab
 rM=$(($RANDOM%59))
