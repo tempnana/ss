@@ -69,8 +69,8 @@ cat > server-config.json <<EOF
 "crypt": "aes-128",
 "mode": "fast2",
 "mtu": 1350,
-"sndwnd": 1024,
-"rcvwnd": 1024,
+"sndwnd": 512,
+"rcvwnd": 512,
 "datashard": 70,
 "parityshard": 30,
 "dscp": 46,
@@ -93,8 +93,8 @@ cat > client-config.json <<EOF
 "crypt": "aes-128",
 "mode": "fast2",
 "mtu": 1350,
-"sndwnd": 1024,
-"rcvwnd": 1024,
+"sndwnd": 512,
+"rcvwnd": 512,
 "datashard": 70,
 "parityshard": 30,
 "dscp": 46,
@@ -143,28 +143,47 @@ EOF
 chmod +x udp2raw_amd64
 ./udp2raw_amd64 --conf-file server.conf 2>&1 &
 #auto boot
-cat > /etc/rc.local << EOF
-#!/bin/bash -e
-#
-# rc.local
-#
-# By default this script does nothing.
-# kcptun
-( ( /usr/local/kcptun/server_linux_amd64 -c /usr/local/kcptun/server-config.json 2>&1 & )  )
-sleep 15s
-# udp2raw
-( ( /usr/local/udp2raw/udp2raw_amd64 --conf-file /usr/local/udp2raw/server.conf 2>&1 & )  )
+cd /etc/init.d/
+cat > kcptun << EOF
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides: kcptun
+# Required-Start: $network $remote_fs $local_fs
+# Required-Stop: $network $remote_fs $local_fs
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: kcptun
+# Description: kcptun
+### END INIT INFO
+cd /usr/local/kcptun
+./server_linux_amd64 -c server-config.json 2>&1 &
 exit 0
 EOF
-chmod +x /etc/rc.local
-systemctl enable rc-local &
-systemctl start rc-local.service &
-# systemctl status rc-local.service
+cat > udp2raw << EOF
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides: udp2raw
+# Required-Start: $network $remote_fs $local_fs
+# Required-Stop: $network $remote_fs $local_fs
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: udp2raw
+# Description: udp2raw
+### END INIT INFO
+cd /usr/local/udp2raw
+sleep 20s
+./udp2raw_amd64 --conf-file server.conf 2>&1 &
+exit 0
+EOF
+chmod +x kcptun
+chmod +x udp2raw
+update-rc.d kcptun defaults
+update-rc.d udp2raw defaults
 #crontab
 rM=$(($RANDOM%59))
 echo "$[rM] 4 * * * /sbin/reboot" >> /var/spool/cron/crontabs/root && /etc/init.d/cron restart
 #disable log/history/root login
-cd && rm -rf /etc/rsyslog.conf && rm -rf /etc/rsyslog.d && rm -rf /etc/init.d/rsyslog && rm -rf /var/log && history -c && export HISTSIZE=0 && cd /etc/ssh && sed -i "s/PermitRootLogin yes/PermitRootLogin no/g" sshd_config && systemctl restart sshd.service && cd
+#cd && rm -rf /etc/rsyslog.conf && rm -rf /etc/rsyslog.d && rm -rf /etc/init.d/rsyslog && rm -rf /var/log && history -c && export HISTSIZE=0 && cd /etc/ssh && sed -i "s/PermitRootLogin yes/PermitRootLogin no/g" sshd_config && systemctl restart sshd.service && cd
 #firewall
 apt install ufw -y
 # ufw allow ssh
