@@ -149,7 +149,7 @@ netstat -nlp |grep :${udp2rawport}
 if [ $? -ne 0 ];then
 ./udp2raw_amd64 --conf-file server.conf 2>&1 &
 else
-echo "udp2raw is runing..."
+echo "udp2raw is runing..." >> while.log
 fi
 sleep 10
 done
@@ -168,7 +168,7 @@ cat > kcptun << EOF
 # Description: kcptun
 ### END INIT INFO
 cd /usr/local/kcptun
-./server_linux_amd64 -c server-config.json
+./server_linux_amd64 -c server-config.json &
 exit 0
 EOF
 cat > udp2raw << EOF
@@ -184,7 +184,7 @@ cat > udp2raw << EOF
 ### END INIT INFO
 cd /usr/local/udp2raw
 sleep 20s
-./udp2raw_amd64 --conf-file server.conf
+./udp2raw_amd64 --conf-file server.conf &
 sleep 10s
 bash udp2raw.sh &
 exit 0
