@@ -142,6 +142,18 @@ EOF
 #run
 chmod +x udp2raw_amd64
 ./udp2raw_amd64 --conf-file server.conf 2>&1 &
+cat > udp2raw.sh << EOF
+#! /bin/bash
+while true; do
+netstat -nlp |grep :${udp2rawport}
+if [ $? -ne 0 ];then
+./udp2raw_amd64 --conf-file server.conf 2>&1 &
+else
+echo "udp2raw is runing..."
+fi
+sleep 10
+done
+EOF
 #auto boot
 cd /etc/init.d/
 cat > kcptun << EOF
@@ -156,7 +168,7 @@ cat > kcptun << EOF
 # Description: kcptun
 ### END INIT INFO
 cd /usr/local/kcptun
-./server_linux_amd64 -c server-config.json 2>&1 &
+./server_linux_amd64 -c server-config.json
 exit 0
 EOF
 cat > udp2raw << EOF
@@ -172,7 +184,9 @@ cat > udp2raw << EOF
 ### END INIT INFO
 cd /usr/local/udp2raw
 sleep 20s
-./udp2raw_amd64 --conf-file server.conf 2>&1 &
+./udp2raw_amd64 --conf-file server.conf
+sleep 10s
+bash udp2raw.sh &
 exit 0
 EOF
 chmod +x kcptun
