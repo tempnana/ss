@@ -147,11 +147,10 @@ cat > udp2raw.sh << EOF
 while true; do
 netstat -nlp |grep :${udp2rawport}
 if [ $? -ne 0 ];then
-./udp2raw_amd64 --conf-file server.conf 2>&1 &
+./udp2raw_amd64 --conf-file server.conf &
 else
-echo "udp2raw is runing..." >> while.log
 fi
-sleep 10
+sleep 20
 done
 EOF
 #auto boot
