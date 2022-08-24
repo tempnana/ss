@@ -67,7 +67,7 @@ wget https://github.com/xtaci/kcptun/releases/download/v20210624/kcptun-linux-am
 tar -zxvf kcptun-linux-amd64-20210624.tar.gz
 #set kcptun port/password
 kcport=$(shuf -i 20000-29999 -n 1)
-kcpwd=$(openssl rand -base64 10)
+kcpwd=$(openssl rand -base64 16)
 #make kcptun server config file
 cat > server-config.json <<EOF
 {
@@ -175,3 +175,6 @@ echo "key=${kcpwd};crypt=aes;mode=fast;mtu=1350;sndwnd=1024;rcvwnd=1024;datashar
 echo '##########'
 #echo '#######ss status check:####### '
 #echo 'systemctl status shadowsocks-libev-server@config'
+echo 'Add more kcptun config:'
+echo 'bash <(wget -qO- https://raw.githubusercontent.com/tempnana/ss/main/addkcp.sh)'
+exit
