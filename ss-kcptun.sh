@@ -176,5 +176,5 @@ echo '##########'
 #echo '#######ss status check:####### '
 #echo 'systemctl status shadowsocks-libev-server@config'
 echo 'Add more kcptun config:'
-echo 'bash <(wget -qO- https://raw.githubusercontent.com/tempnana/ss/main/addkcp.sh)'
+echo 'bash <(wget -qO- https://raw.githubusercontent.com/tempnana/ss/main/kcpadd.sh)'
 exit
