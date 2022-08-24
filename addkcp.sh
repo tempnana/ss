@@ -69,5 +69,6 @@ echo 'kcptun client config:'
 echo '##########'
 cat client-config${confnum}.json
 echo '##########'
-echo 'Add more config:bash addkcp.sh'
+echo 'Add more kcptun config:'
+echo 'bash <(wget -qO- https://raw.githubusercontent.com/tempnana/ss/main/addkcp.sh)'
 exit
