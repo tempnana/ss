@@ -4,22 +4,19 @@
 <li>Kcptun is configured</li>
 <li>udp2raw is configured</li>
 <br>
-<p>Install Shadowsocks-libev + Kcptun + udp2raw:</p>
+<b>Install Shadowsocks-libev + Kcptun + udp2raw:</b>
 <pre>
 bash <(wget -qO- https://raw.githubusercontent.com/tempnana/ss/main/ss-kcptun-udp2raw.sh)
 </pre>
-<br>
-<p>Install Shadowsocks-libev + Kcptun:</p>
+<b>Install Shadowsocks-libev + Kcptun:</b>
 <pre>
 bash <(wget -qO- https://raw.githubusercontent.com/tempnana/ss/main/ss-kcptun.sh)
 </pre>
-<br>
-<p>Only Install Shadowsocks-libev:</p>
+<b>Only Install Shadowsocks-libev:</b>
 <pre>
 bash <(wget -qO- https://raw.githubusercontent.com/tempnana/ss/main/ss.sh)
 </pre>
-<br>
-<p>Other Shadowsocks-libev:</p>
+<b>Other server add Shadowsocks-libev:</b>
 <pre>
 bash <(wget -qO- https://raw.githubusercontent.com/tempnana/ss/main/s.sh)
 </pre>
@@ -33,3 +30,9 @@ systemctl restart snap.shadowsocks-libev.ss-server-daemon.service
 systemctl status snap.shadowsocks-libev.ss-server-daemon.service
 </pre>
 -->
+<br>
+<b>Only kcptun:</b>
+<br>
+<pre>
+bash <(wget -qO- https://raw.githubusercontent.com/tempnana/ss/main/kcponly.sh)
+</pre>
