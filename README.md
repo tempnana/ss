@@ -4,6 +4,16 @@
 <li>Kcptun is configured</li>
 <li>udp2raw is configured</li>
 <br>
+<b>Recommended installation in Screen.</b>
+<br>
+<pre>
+apt install screen -y
+</pre>
+<pre>
+screen -S ss
+</pre>
+<hr>
+<br>
 <b>Install Shadowsocks-libev + Kcptun + udp2raw:</b>
 <pre>
 bash <(wget -qO- https://raw.githubusercontent.com/tempnana/ss/main/ss-kcptun-udp2raw.sh)
