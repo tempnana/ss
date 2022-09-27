@@ -1,5 +1,5 @@
 # ss
-<b>(Debian9/10/11) is tested</b>
+<b>(Debian 9/10/11) is tested</b>
 <li>Install Shadowsocks-libev Via Snap</li>
 <li>Kcptun is configured</li>
 <li>udp2raw is configured</li>
