@@ -11,7 +11,7 @@ kcport=$(shuf -i 20000-29999 -n 1)
 kcpwd=$(openssl rand -base64 16)
 configlist=$(ls server-config*)
 echo 'server-config list:' $configlist
-read -p "Enter target ip porot and config file number. eg:1.1.1.1 1111 1 > " rip rport confnum
+read -p "Enter target ip port and config file number. eg:1.1.1.1 1111 1 > " rip rport confnum
 cat > server-config${confnum}.json <<EOF
 {
 "listen": ":${kcport}",
