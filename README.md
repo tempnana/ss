@@ -14,10 +14,10 @@ screen -S ss
 </pre>
 <hr>
 <br>
-<b>Install Shadowsocks-libev + Kcptun + udp2raw:</b>
-<pre>
+<del><b>Install Shadowsocks-libev + Kcptun + udp2raw:</b></del>
+<del><pre>
 bash <(wget -qO- https://raw.githubusercontent.com/tempnana/ss/main/ss-kcptun-udp2raw.sh)
-</pre>
+</pre></del>
 <b>Install Shadowsocks-libev + Kcptun:</b>
 <pre>
 bash <(wget -qO- https://raw.githubusercontent.com/tempnana/ss/main/ss-kcptun.sh)
