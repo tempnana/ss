@@ -118,7 +118,7 @@ cat > client-config.json <<EOF
 EOF
 #run
 chmod +x server_linux_amd64
-./server_linux_amd64 -c /usr/local/kcptun/server-config.json 2>&1 &
+./server_linux_amd64 -c /usr/local/kcptun/server-config.json >/dev/null 2>&1 &
 #auto boot
 cat > /etc/rc.local << EOF
 #!/bin/bash -e
