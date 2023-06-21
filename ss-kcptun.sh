@@ -120,26 +120,36 @@ EOF
 chmod +x server_linux_amd64
 ./server_linux_amd64 -c /usr/local/kcptun/server-config.json 2>&1 &
 #auto boot
-cat > /etc/rc.local << EOF
-#!/bin/bash -e
-#
-# rc.local
-#
-# By default this script does nothing.
-# kcptun
-( ( /usr/local/kcptun/server_linux_amd64 -c /usr/local/kcptun/server-config.json 2>&1 & )  )
+cd /etc/init.d/
+cat > autokcp <<EOF
+#!/bin/sh
+
+### BEGIN INIT INFO
+# Provides: autokcp
+# Required-Start:
+# Required-Stop:
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: autokcp
+# Description: autokcp
+### END INIT INFO
+#chmod +x autokcp
+#update-rc.d autokcp defaults
+#update-rc.d -f autokcp remove
+sleep 20
+/usr/local/kcptun/server_linux_amd64 -c /usr/local/kcptun/server-config.json 2>&1 &
+
 exit 0
+
 EOF
-chmod +x /etc/rc.local
-systemctl enable rc-local
-systemctl start rc-local.service &
-# systemctl status rc-local.service
+chmod +x autokcp
+update-rc.d autokcp defaults
 #crontab
 rM=$(($RANDOM%59))
 echo "$[rM] 4 * * * /sbin/reboot" >> /var/spool/cron/crontabs/root && /etc/init.d/cron restart
 #disable log/history/root login
 cd && rm -rf /etc/rsyslog.conf && rm -rf /etc/rsyslog.d && rm -rf /etc/init.d/rsyslog && rm -rf /var/log && history -c && export HISTSIZE=0
-cd /etc/ssh && sed -i "s/PermitRootLogin yes/PermitRootLogin no/g" sshd_config && systemctl restart sshd.service && cd
+# cd /etc/ssh && sed -i "s/PermitRootLogin yes/PermitRootLogin no/g" sshd_config && systemctl restart sshd.service && cd
 #ufw
 apt install ufw -y
 # ufw allow ssh
