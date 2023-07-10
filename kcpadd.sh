@@ -59,7 +59,7 @@ cat > client-config${confnum}.json <<EOF
 "keepalive": 10
 }
 EOF
-sed -i '$i /usr/local/kcptun/server_linux_amd64 -c /usr/local/kcptun/server-config'${confnum}'.json 2>&1 &' /etc/init.d/autokcp
+sed -i 's:exit 0:sleep 3\n/usr/local/kcptun/server_linux_amd64 -c /usr/local/kcptun/server-config'${confnum}'.json 2>\&1 \&\nexit 0:g' /etc/init.d/autokcp
 chmod +x /etc/init.d/autokcp
 ufw allow "$kcport"
 ufw --force enable
