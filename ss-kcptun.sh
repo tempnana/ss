@@ -62,9 +62,8 @@ echo 'net.core.netdev_max_backlog=2048' >> /etc/sysctl.conf
 #################################
 mkdir -p /usr/local/kcptun
 cd /usr/local/kcptun
-# wget https://github.com/xtaci/kcptun/releases/download/v20210103/kcptun-linux-amd64-20210103.tar.gz
-wget https://github.com/xtaci/kcptun/releases/download/v20210624/kcptun-linux-amd64-20210624.tar.gz
-tar -zxvf kcptun-linux-amd64-20210624.tar.gz
+wget https://github.com/xtaci/kcptun/releases/download/v20230214/kcptun-linux-amd64-20230214.tar.gz
+tar -zxvf kcptun-linux-amd64-20230214.tar.gz
 #set kcptun port/password
 kcport=$(shuf -i 20000-29999 -n 1)
 kcpwd=$(openssl rand -base64 16)
