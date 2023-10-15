@@ -1,5 +1,6 @@
 #!/bin/bash
 #install snap
+mkdir -p /var/log/apt/
 apt update && apt upgrade -y
 apt install snapd -y
 snap install core
@@ -48,8 +49,6 @@ systemctl enable shadowsocks-libev-server@config
 systemctl start shadowsocks-libev-server@config &
 #systemctl status shadowsocks-libev-server@config
 #################################
-sleep 5s
-echo 'Set kcptun...'
 ###kcptun
 #Increase the number of open files on your server,
 echo ulimit -n 65535 >> /etc/profile
@@ -62,7 +61,6 @@ echo 'net.core.wmem_default=26214400' >> /etc/sysctl.conf
 echo 'net.core.netdev_max_backlog=2048' >> /etc/sysctl.conf
 /sbin/sysctl -p
 #################################
-sleep 5s
 mkdir -p /usr/local/kcptun
 cd /usr/local/kcptun
 wget https://github.com/xtaci/kcptun/releases/download/v20230214/kcptun-linux-amd64-20230214.tar.gz
