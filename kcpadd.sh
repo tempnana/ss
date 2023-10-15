@@ -31,7 +31,7 @@ cat > server-config${confnum}.json <<EOF
 "interval": 40,
 "resend": 0,
 "nc": 0,
-"sockbuf": 4194304,
+"sockbuf": 16777217,
 "keepalive": 10
 }
 EOF
@@ -55,7 +55,7 @@ cat > client-config${confnum}.json <<EOF
 "interval": 40,
 "resend": 0,
 "nc": 0,
-"sockbuf": 4194304,
+"sockbuf": 16777217,
 "keepalive": 10
 }
 EOF
