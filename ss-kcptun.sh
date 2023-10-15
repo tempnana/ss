@@ -48,6 +48,8 @@ systemctl enable shadowsocks-libev-server@config
 systemctl start shadowsocks-libev-server@config &
 #systemctl status shadowsocks-libev-server@config
 #################################
+sleep 5s
+echo 'Set kcptun...'
 ###kcptun
 #Increase the number of open files on your server,
 echo ulimit -n 65535 >> /etc/profile
@@ -144,8 +146,8 @@ EOF
 chmod +x autokcp
 update-rc.d autokcp defaults
 #crontab
-rM=$(($RANDOM%59))
-echo "$[rM] 4 * * * /sbin/reboot" >> /var/spool/cron/crontabs/root && /etc/init.d/cron restart
+#rM=$(($RANDOM%59))
+#echo "$[rM] 4 * * * /sbin/reboot" >> /var/spool/cron/crontabs/root && /etc/init.d/cron restart
 #disable log/history/root login
 cd && rm -rf /etc/rsyslog.conf && rm -rf /etc/rsyslog.d && rm -rf /etc/init.d/rsyslog && rm -rf /var/log && history -c && export HISTSIZE=0
 cd /etc/ssh && sed -i "s/PermitRootLogin yes/PermitRootLogin no/g" sshd_config && systemctl restart sshd.service && cd
