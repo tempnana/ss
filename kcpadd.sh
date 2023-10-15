@@ -1,5 +1,12 @@
 #!/bin/bash
-cd /usr/local/kcptun
+#install snap
+mkdir -p /var/log/apt/
+apt update && apt upgrade -y
+apt install snapd -y
+snap install core
+#install shadowsocks-libev
+snap install shadowsocks-libev
+#get ip
 get_ip() {
     local IP
     IP=$(ip addr | egrep -o '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | egrep -v '^192\.168|^172\.1[6-9]\.|^172\.2[0-9]\.|^172\.3[0-2]\.|^10\.|^127\.|^255\.|^0\.' | head -n 1)
@@ -7,15 +14,65 @@ get_ip() {
     [ -z "${IP}" ] && IP=$(wget -qO- -t1 -T2 ipinfo.io/ip)
     echo "${IP}"
 }
+ssport=$(shuf -i 9000-19999 -n 1)
+sspwd=$(openssl rand -base64 16)
+arr[0]='chacha20-ietf-poly1305'
+arr[1]='aes-256-gcm'
+arr[2]='aes-128-gcm'
+rand=$(($RANDOM % ${#arr[@]}))
+method=${arr[$rand]}
+#make ss config file
+mkdir -p /var/snap/shadowsocks-libev/common/etc/shadowsocks-libev
+cat > /var/snap/shadowsocks-libev/common/etc/shadowsocks-libev/config.json <<EOF
+{
+    "server":["::0","0.0.0.0"],
+    "server_port":$ssport,
+    "password":"$sspwd",
+    "method":"$method",
+    "mode":"tcp_and_udp",
+    "fast_open":false
+}
+EOF
+#auto boot
+cat > /etc/systemd/system/shadowsocks-libev-server@.service <<EOF
+[Unit]
+Description=Shadowsocks-Libev Custom Server Service for %I
+After=network-online.target
+[Service]
+Type=simple
+LimitNOFILE=65536
+ExecStart=/usr/bin/snap run shadowsocks-libev.ss-server -c /var/snap/shadowsocks-libev/common/etc/shadowsocks-libev/%i.json
+[Install]
+WantedBy=multi-user.target
+EOF
+systemctl enable shadowsocks-libev-server@config
+systemctl start shadowsocks-libev-server@config &
+#systemctl status shadowsocks-libev-server@config
+#################################
+###kcptun
+#Increase the number of open files on your server,
+echo ulimit -n 65535 >> /etc/profile
+source /etc/profile
+#Suggested sysctl.conf parameters for better handling of UDP packets:
+echo 'net.core.rmem_max=26214400' >> /etc/sysctl.conf
+echo 'net.core.rmem_default=26214400' >> /etc/sysctl.conf
+echo 'net.core.wmem_max=26214400' >> /etc/sysctl.conf
+echo 'net.core.wmem_default=26214400' >> /etc/sysctl.conf
+echo 'net.core.netdev_max_backlog=2048' >> /etc/sysctl.conf
+/sbin/sysctl -p
+#################################
+mkdir -p /usr/local/kcptun
+cd /usr/local/kcptun
+wget https://github.com/xtaci/kcptun/releases/download/v20230214/kcptun-linux-amd64-20230214.tar.gz
+tar -zxvf kcptun-linux-amd64-20230214.tar.gz
+#set kcptun port/password
 kcport=$(shuf -i 20000-29999 -n 1)
 kcpwd=$(openssl rand -base64 16)
-configlist=$(ls server-config*)
-echo 'server-config list:' $configlist
-read -p "Enter target ip port and config file number. eg:1.1.1.1 1111 1 > " rip rport confnum
-cat > server-config${confnum}.json <<EOF
+#make kcptun server config file
+cat > server-config.json <<EOF
 {
 "listen": ":${kcport}",
-"target": "${rip}:${rport}",
+"target": "127.0.0.1:${ssport}",
 "key": "${kcpwd}",
 "crypt": "aes",
 "mode": "fast",
@@ -36,9 +93,9 @@ cat > server-config${confnum}.json <<EOF
 }
 EOF
 #make kcptun client config file
-cat > client-config${confnum}.json <<EOF
+cat > client-config.json <<EOF
 {
-"localaddr": ":${rport}",
+"localaddr": ":${ssport}",
 "remoteaddr": "$(get_ip):${kcport}",
 "key": "${kcpwd}",
 "crypt": "aes",
@@ -59,16 +116,75 @@ cat > client-config${confnum}.json <<EOF
 "keepalive": 10
 }
 EOF
-sed -i 's:exit 0:sleep 3\n/usr/local/kcptun/server_linux_amd64 -c /usr/local/kcptun/server-config'${confnum}'.json 2>\&1 \&\nexit 0:g' /etc/init.d/autokcp
-chmod +x /etc/init.d/autokcp
+#run
+chmod +x server_linux_amd64
+./server_linux_amd64 -c /usr/local/kcptun/server-config.json 2>&1 &
+#auto boot
+cd /etc/init.d/
+cat > autokcp <<EOF
+#!/bin/sh
+
+### BEGIN INIT INFO
+# Provides: autokcp
+# Required-Start:
+# Required-Stop:
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: autokcp
+# Description: autokcp
+### END INIT INFO
+#chmod +x autokcp
+#update-rc.d autokcp defaults
+#update-rc.d -f autokcp remove
+sleep 20
+/usr/local/kcptun/server_linux_amd64 -c /usr/local/kcptun/server-config.json 2>&1 &
+
+exit 0
+
+EOF
+chmod +x autokcp
+update-rc.d autokcp defaults
+#crontab
+rM=$(($RANDOM%59))
+echo "$[rM] 4 * * * /sbin/reboot" >> /var/spool/cron/crontabs/root && /etc/init.d/cron restart
+#disable log/history/root login
+cd && rm -rf /etc/rsyslog.conf && rm -rf /etc/rsyslog.d && rm -rf /etc/init.d/rsyslog && rm -rf /var/log && history -c && export HISTSIZE=0
+cd /etc/ssh && sed -i "s/PermitRootLogin yes/PermitRootLogin no/g" sshd_config && systemctl restart sshd.service && cd
+#ufw
+apt install ufw -y
+# ufw allow ssh
+ufw allow "$ssport"
 ufw allow "$kcport"
 ufw --force enable
-./server_linux_amd64 -c /usr/local/kcptun/server-config${confnum}.json >/dev/null 2>&1 &
-echo "server-config${confnum}.json started."
+#ufw rules checking
+ufw status verbose
+# end
+### More settings:
+###
+#ufw disable
+###
+# ufw reset
+#ss url
+baseurl=$(echo -n "$method:$sspwd@127.0.0.1:$ssport" | base64 -w0)
+echo '##########'
+echo 'ss url is:'
+echo 'ss://'$baseurl'#'$(get_ip)
+echo '##########'
+#kcptun client config
 echo 'kcptun client config:'
+cat /usr/local/kcptun/client-config.json
+mbaseurl=$(echo -n "$method:$sspwd@$(get_ip):$kcport" | base64 -w0)
 echo '##########'
-cat client-config${confnum}.json
+echo 'mobile ss url is:'
 echo '##########'
+echo 'ss://'$mbaseurl'#'$(get_ip)
+echo '##########'
+echo 'kcptun mobile client config:'
+echo '##########'
+echo "key=${kcpwd};crypt=aes;mode=fast;mtu=1350;sndwnd=1024;rcvwnd=1024;datashard=70;parityshard=30;dscp=46;interval=40;sockbuf=16777217;keepalive=10"
+echo '##########'
+#echo '#######ss status check:####### '
+#echo 'systemctl status shadowsocks-libev-server@config'
 echo 'Add more kcptun config:'
 echo 'bash <(wget -qO- https://raw.githubusercontent.com/tempnana/ss/main/kcpadd.sh)'
 exit
