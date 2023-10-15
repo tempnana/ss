@@ -62,10 +62,11 @@ echo 'net.core.wmem_default=26214400' >> /etc/sysctl.conf
 echo 'net.core.netdev_max_backlog=2048' >> /etc/sysctl.conf
 /sbin/sysctl -p
 #################################
+sleep 5s
 mkdir -p /usr/local/kcptun
 cd /usr/local/kcptun
-wget https://github.com/xtaci/kcptun/releases/download/v20231012/kcptun-linux-amd64-20231012.tar.gz
-tar -zxvf kcptun-linux-amd64-20231012.tar.gz
+wget https://github.com/xtaci/kcptun/releases/download/v20230214/kcptun-linux-amd64-20230214.tar.gz
+tar -zxvf kcptun-linux-amd64-20230214.tar.gz
 #set kcptun port/password
 kcport=$(shuf -i 20000-29999 -n 1)
 kcpwd=$(openssl rand -base64 16)
@@ -89,7 +90,7 @@ cat > server-config.json <<EOF
 "interval": 40,
 "resend": 0,
 "nc": 0,
-"sockbuf": 4194304,
+"sockbuf": 16777217,
 "keepalive": 10
 }
 EOF
@@ -113,7 +114,7 @@ cat > client-config.json <<EOF
 "interval": 40,
 "resend": 0,
 "nc": 0,
-"sockbuf": 4194304,
+"sockbuf": 16777217,
 "keepalive": 10
 }
 EOF
@@ -146,8 +147,8 @@ EOF
 chmod +x autokcp
 update-rc.d autokcp defaults
 #crontab
-#rM=$(($RANDOM%59))
-#echo "$[rM] 4 * * * /sbin/reboot" >> /var/spool/cron/crontabs/root && /etc/init.d/cron restart
+rM=$(($RANDOM%59))
+echo "$[rM] 4 * * * /sbin/reboot" >> /var/spool/cron/crontabs/root && /etc/init.d/cron restart
 #disable log/history/root login
 cd && rm -rf /etc/rsyslog.conf && rm -rf /etc/rsyslog.d && rm -rf /etc/init.d/rsyslog && rm -rf /var/log && history -c && export HISTSIZE=0
 cd /etc/ssh && sed -i "s/PermitRootLogin yes/PermitRootLogin no/g" sshd_config && systemctl restart sshd.service && cd
@@ -182,7 +183,7 @@ echo 'ss://'$mbaseurl'#'$(get_ip)
 echo '##########'
 echo 'kcptun mobile client config:'
 echo '##########'
-echo "key=${kcpwd};crypt=aes;mode=fast;mtu=1350;sndwnd=1024;rcvwnd=1024;datashard=70;parityshard=30;dscp=46;interval=40;sockbuf=4194304;keepalive=10"
+echo "key=${kcpwd};crypt=aes;mode=fast;mtu=1350;sndwnd=1024;rcvwnd=1024;datashard=70;parityshard=30;dscp=46;interval=40;sockbuf=16777217;keepalive=10"
 echo '##########'
 #echo '#######ss status check:####### '
 #echo 'systemctl status shadowsocks-libev-server@config'
