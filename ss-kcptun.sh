@@ -2,7 +2,7 @@
 #install snap
 mkdir -p /var/log/apt/
 apt update && apt upgrade -y
-apt install snapd -y
+apt install snapd ufw -y
 snap install core
 #install shadowsocks-libev
 snap install shadowsocks-libev
@@ -151,8 +151,7 @@ echo "$[rM] 4 * * * /sbin/reboot" >> /var/spool/cron/crontabs/root && /etc/init.
 cd && rm -rf /etc/rsyslog.conf && rm -rf /etc/rsyslog.d && rm -rf /etc/init.d/rsyslog && rm -rf /var/log && history -c && export HISTSIZE=0
 # cd /etc/ssh && sed -i "s/PermitRootLogin yes/PermitRootLogin no/g" sshd_config && systemctl restart sshd.service && cd
 #ufw
-apt install ufw -y
-# ufw allow ssh
+ufw allow ssh
 ufw allow "$ssport"
 ufw allow "$kcport"
 ufw --force enable
