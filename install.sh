@@ -237,8 +237,8 @@ echo "Choose install:"
 echo ""
 echo " 1: Install Shadowsocks + Kcptun"
 echo " 2: Only install Shadowsocks"
-echo " 3: Only install kcptun"
-echo " 4: Add more kcptun"
+echo " 3: Only install Kcptun"
+echo " 4: Add more Kcptun"
 echo ""
 read -p "(Directly Enter to install Shadowsocks + kcptun), Enter 1 or 2,3,4:" install
 if [[ '1' = "$install" ]]; then
