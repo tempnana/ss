@@ -41,10 +41,10 @@ systemctl stop snap.shadowsocks-libev.ss-server-daemon.service
 systemctl restart snap.shadowsocks-libev.ss-server-daemon.service
 systemctl status snap.shadowsocks-libev.ss-server-daemon.service
 </pre>
--->
 <br>
 <b>Only kcptun:</b>
 <br>
 <pre>
 bash <(wget -qO- https://raw.githubusercontent.com/tempnana/ss/main/kcponly.sh)
 </pre>
+-->
