@@ -18,6 +18,13 @@ screen -S ss
 <pre>
 bash <(wget -qO- https://raw.githubusercontent.com/tempnana/ss/main/install.sh)
 </pre>
+<hr>
+<br>
+<b>Source:</b>
+<br>
+shadowsocks-libev: https://github.com/shadowsocks/shadowsocks-libev
+<br>
+kcptun: https://github.com/xtaci/kcptun
 <!--
 <b>Install Shadowsocks-libev + Kcptun:</b>
 <pre>
