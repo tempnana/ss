@@ -255,7 +255,9 @@ elif [[ '2' = "$install" ]]; then
     get_shadowsocks_config
 elif [[ '3' = "$install" ]]; then
     install_kcptun
+    if command -v ufw >/dev/null 2>&1; then
     ufw allow ${kcport}
+    fi
     get_kcptun_config
 elif [[ '4' = "$install" ]]; then
     add_more_kcptun
