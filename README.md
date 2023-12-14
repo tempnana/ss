@@ -18,6 +18,7 @@ screen -S ss
 <pre>
 bash <(wget -qO- https://raw.githubusercontent.com/tempnana/ss/main/install.sh)
 </pre>
+<!--
 <b>Install Shadowsocks-libev + Kcptun:</b>
 <pre>
 bash <(wget -qO- https://raw.githubusercontent.com/tempnana/ss/main/ss-kcptun.sh)
@@ -30,6 +31,7 @@ bash <(wget -qO- https://raw.githubusercontent.com/tempnana/ss/main/ss.sh)
 <pre>
 bash <(wget -qO- https://raw.githubusercontent.com/tempnana/ss/main/s.sh)
 </pre>
+-->
 <!--
 <br>
 <p>Manage it:</p>
