@@ -33,9 +33,9 @@ install_shadowsocks() {
     cat >/var/snap/shadowsocks-libev/common/etc/shadowsocks-libev/config.json <<EOF
 {
     "server":["::0","0.0.0.0"],
-    "server_port":$ssport,
-    "password":"$sspwd",
-    "method":"$method",
+    "server_port":${ssport},
+    "password":"${sspwd}",
+    "method":"${method}",
     "mode":"tcp_and_udp",
     "fast_open":false
 }
@@ -172,8 +172,8 @@ set_ufw() {
     ufw default deny incoming
     ufw default deny outgoing
     ufw allow ssh
-    ufw allow $ssport
-    ufw allow $kcport
+    ufw allow ${ssport}
+    ufw allow ${kcport}
     ufw --force enable
     ufw status verbose
     # ufw rules checking
@@ -190,10 +190,16 @@ set_log_ssh() {
 
 # # get shadowsocks config
 get_shadowsocks_config() {
-    baseurl=$(echo -n "$method:$sspwd@127.0.0.1:$ssport" | base64 -w0)
+    echo ''
+    if [[ -f "/usr/local/kcptun/server-config.json" ]]; then
+        ss_ip='127.0.0.1'
+    else
+        ss_ip=$(get_ip)
+    fi
+    baseurl=$(echo -n "${method}:${sspwd}@${ss_ip}:${ssport}" | base64 -w0)
     ss_url="ss://${baseurl}#$(get_ip)"
     echo '#### shadowsocks url is:'
-    echo -e "\033[1;33m$ss_url\033[0m"
+    echo -e "\033[1;33m${ss_url}\033[0m"
     echo ''
 }
 
@@ -201,16 +207,16 @@ get_shadowsocks_config() {
 get_kcptun_config() {
     view_kcptunconfig=$(cat /usr/local/kcptun/client-config.json)
     echo '#### kcptun client config is:'
-    echo -e "\033[1;33m$view_kcptunconfig\033[0m"
+    echo -e "\033[1;33m${view_kcptunconfig}\033[0m"
     echo ''
-    mbaseurl=$(echo -n "$method:$sspwd@$(get_ip):$kcport" | base64 -w0)
+    mbaseurl=$(echo -n "${method}:${sspwd}@$(get_ip):${kcport}" | base64 -w0)
     ss_m_url="ss://${baseurl}#$(get_ip)"
     echo '#### mobile shadowsocks url is:'
-    echo -e "\033[1;33m$ss_m_url\033[0m"
+    echo -e "\033[1;33m${ss_m_url}\033[0m"
     echo ''
     echo '#### mobile kcptun client config:'
     kcptun_m_config="key=${kcpwd};crypt=aes;mode=fast;mtu=1350;sndwnd=1024;rcvwnd=1024;datashard=70;parityshard=30;dscp=46;interval=40;sockbuf=16777217;keepalive=10"
-    echo -e "\033[1;33m$kcptun_m_config\033[0m"
+    echo -e "\033[1;33m${kcptun_m_config}\033[0m"
     echo ''
     echo 'Add more kcptun config:'
     echo 'bash <(wget -qO- https://raw.githubusercontent.com/tempnana/ss/main/kcpadd.sh)'
@@ -220,7 +226,6 @@ get_kcptun_config() {
 add_more_kcptun() {
     bash <(wget -qO- https://raw.githubusercontent.com/tempnana/ss/main/kcpadd.sh)
 }
-
 
 default_install() {
     update_install
@@ -246,11 +251,11 @@ if [[ '1' = "$install" ]]; then
 elif [[ '2' = "$install" ]]; then
     update_install
     install_shadowsocks
-    ufw allow "$ssport"
+    ufw allow ${ssport}
     get_shadowsocks_config
 elif [[ '3' = "$install" ]]; then
     install_kcptun
-    ufw allow "$kcport"
+    ufw allow ${kcport}
     get_kcptun_config
 elif [[ '4' = "$install" ]]; then
     add_more_kcptun
