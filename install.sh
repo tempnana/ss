@@ -192,8 +192,8 @@ set_log_ssh() {
 get_shadowsocks_config() {
     baseurl=$(echo -n "$method:$sspwd@127.0.0.1:$ssport" | base64 -w0)
     ss_url="ss://${baseurl}#$(get_ip)"
-    echo '#### ss url is:'
-    echo -e "\033[1;33m$ss_url\033[0m"
+    echo '#### shadowsocks url is:'
+    echo -e "\033[1;33;46m$ss_url\033[0m"
     echo ''
 }
 
@@ -201,16 +201,16 @@ get_shadowsocks_config() {
 get_kcptun_config() {
     view_kcptunconfig=$(cat /usr/local/kcptun/client-config.json)
     echo '#### kcptun client config is:'
-    echo -e "\033[1;33m$view_kcptunconfig\033[0m"
+    echo -e "\033[1;33;46m$view_kcptunconfig\033[0m"
     echo ''
     mbaseurl=$(echo -n "$method:$sspwd@$(get_ip):$kcport" | base64 -w0)
     ss_m_url="ss://${baseurl}#$(get_ip)"
     echo '#### mobile shadowsocks url is:'
-    echo -e "\033[1;33m$ss_m_url\033[0m"
+    echo -e "\033[1;33;46m$ss_m_url\033[0m"
     echo ''
     echo '#### mobile kcptun client config:'
     kcptun_m_config="key=${kcpwd};crypt=aes;mode=fast;mtu=1350;sndwnd=1024;rcvwnd=1024;datashard=70;parityshard=30;dscp=46;interval=40;sockbuf=16777217;keepalive=10"
-    echo -e "\033[1;33m$kcptun_m_config\033[0m"
+    echo -e "\033[1;33;46m$kcptun_m_config\033[0m"
     echo ''
     echo 'Add more kcptun config:'
     echo 'bash <(wget -qO- https://raw.githubusercontent.com/tempnana/ss/main/kcpadd.sh)'
