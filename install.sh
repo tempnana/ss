@@ -169,16 +169,16 @@ set_crontab() {
 
 # # set ufw
 set_ufw() {
+    ufw --force enable
     ufw default deny incoming
-    ufw default deny outgoing
+    ufw default allow outgoing
     ufw allow ssh
     ufw allow ${ssport}
     ufw allow ${kcport}
-    ufw --force enable
     ufw status verbose
-    # ufw rules checking
-    # ufw disable
-    # ufw reset
+    systemctl disable netfilter-persistent
+    systemctl start ufw
+    systemctl enable ufw
 }
 
 # # disable log and ssh login
@@ -256,7 +256,7 @@ elif [[ '2' = "$install" ]]; then
 elif [[ '3' = "$install" ]]; then
     install_kcptun
     if command -v ufw >/dev/null 2>&1; then
-    ufw allow ${kcport}
+        ufw allow ${kcport}
     fi
     get_kcptun_config
 elif [[ '4' = "$install" ]]; then
